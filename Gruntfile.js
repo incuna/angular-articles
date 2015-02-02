@@ -174,7 +174,19 @@ module.exports = function (grunt) {
                     subdir: '.',
                     file: 'lcov.info'
                 },
-                logLevel: 'WARN'
+                logLevel: 'WARN',
+                options: {
+                    files: [
+                        '<%= config.lib %>/angular/angular.js',
+                        '<%= config.lib %>/angular-mocks/angular-mocks.js',
+                        '<%= config.lib %>/angular-route/angular-route.js',
+                        '<%= config.lib %>/lodash/dist/lodash.js',
+                        'node_modules/jasmine-expect/dist/jasmine-matchers.js',
+                        // Test the distribution in Travis.
+                        '<%= config.files.distMin %>',
+                        '<%= config.files.test %>'
+                    ]
+                }
             },
             watch: {
                 autoWatch: true,
@@ -186,9 +198,16 @@ module.exports = function (grunt) {
                 reporters: ['dots'],
                 logLevel: 'INFO'
             }
-            // TODO: unit test dist files.
         }
 
+    });
+
+    grunt.registerTask('ensure:dist', function () {
+        var dist = grunt.config('config.files.dist');
+        var distMin = grunt.config('config.files.distMin');
+        if (!grunt.file.exists(dist) || !grunt.file.exists(distMin)) {
+            grunt.fatal('Nill or impartial distribution. Run `grunt dist` and commit.');
+        }
     });
 
     grunt.registerTask('default', ['concurrent:watch']);
@@ -196,7 +215,7 @@ module.exports = function (grunt) {
     grunt.registerTask('unit', ['clean:coverage', 'karma:unit']);
     grunt.registerTask('unit:travis', ['clean:coverage', 'karma:travis']);
     grunt.registerTask('test', ['lint', 'unit']);
-    grunt.registerTask('test:travis', ['lint', 'unit:travis']);
+    grunt.registerTask('test:travis', ['ensure:dist', 'lint', 'unit:travis']);
     grunt.registerTask('dist', ['clean:dist', 'ngtemplates', 'concat:dist', 'uglify:dist']);
 
 };
