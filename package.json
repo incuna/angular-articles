@@ -1,0 +1,31 @@
+{
+  "name": "angular-articles",
+  "version": "0.0.0",
+  "authors": [
+    "henry <henry@incuna.com>"
+  ],
+  "description": "Articles of content for AngularJS",
+  "main": "dist/angular-articles.js",
+  "keywords": [
+    "angular",
+    "articles",
+    "content"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/incuna/angular-articles"
+  },
+  "bugs": {
+    "url": "https://github.com/incuna/angular-articles/issues"
+  },
+  "homepage": "https://github.com/incuna/angular-articles",
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "jit-grunt": "0.9.0",
+    "load-grunt-tasks": "3.1.0"
+  }
+}
