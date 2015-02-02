@@ -34,7 +34,7 @@
                     controller: 'SectionsArticlesListCtrl',
                     templateUrl: 'templates/sections/articles-list.html'
                 })
-                .when('/sections/:section/articles/:article', {
+                .when('/sections/:section/articles/:article/', {
                     controller: 'SectionsArticlesDetailCtrl',
                     templateUrl: 'templates/sections/articles-detail.html'
                 })
