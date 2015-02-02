@@ -1,0 +1,4 @@
+<h1>Section: {{ section.slug }}</h1>
+<h2>Article: {{ article.slug }}</h2>
+<div ng-include="article.templateUrl"></div>
+<a href="#/sections/{{ section.slug }}/articles/">&lt;– Section articles: {{ section.slug }}</a>

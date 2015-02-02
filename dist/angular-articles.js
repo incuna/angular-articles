@@ -1,8 +1,4 @@
-/**
-* angular-articles Module
-*
-* Articles of content for AngularJS.
-*/
+/*! angular-articles - v0.0.0 - 2015-02-02 */
 (function (angular, _) {
     'use strict';
 
@@ -181,3 +177,37 @@
     ]);
 
 }(window.angular, window._));
+
+angular.module('articles').run(['$templateCache', function($templateCache) {
+  'use strict';
+
+  $templateCache.put('templates/articles/detail.html',
+    "<h1>Article: {{ article.slug }}</h1><div ng-include=article.templateUrl></div><a href=\"#/articles/\">&lt;– Articles</a>"
+  );
+
+
+  $templateCache.put('templates/articles/list.html',
+    "<h1>Articles</h1><ul><li ng-repeat=\"article in articles\"><a ng-href=\"#/articles/{{ article.slug }}/\">Article: {{ article.slug }}</a></li></ul>"
+  );
+
+
+  $templateCache.put('templates/sections/articles-detail.html',
+    "<h1>Section: {{ section.slug }}</h1><h2>Article: {{ article.slug }}</h2><div ng-include=article.templateUrl></div><a href=\"#/sections/{{ section.slug }}/articles/\">&lt;– Section articles: {{ section.slug }}</a>"
+  );
+
+
+  $templateCache.put('templates/sections/articles-list.html',
+    "<h1>Section: {{ section.slug }}</h1><ul><li ng-repeat=\"article in articles\"><a ng-href=\"#/sections/{{ section.slug }}/articles/{{ article.slug }}/\">Article: {{ article.slug }}</a></li></ul><a href=\"#/sections/{{ section.slug }}/\">&lt;– Section: {{ section.slug }}</a>"
+  );
+
+
+  $templateCache.put('templates/sections/detail.html',
+    "<h1>Section: {{ section.slug }}</h1><a href=\"#/sections/\">&lt;– Sections</a> <a href=\"#/sections/{{ section.slug }}/articles/\">Articles of {{ section.slug }} – &gt;</a>"
+  );
+
+
+  $templateCache.put('templates/sections/list.html',
+    "<h1>Sections</h1><ul><li ng-repeat=\"section in sections\"><a ng-href=\"#/sections/{{ section.slug }}/\">Section: {{ section.slug }}</a></li></ul>"
+  );
+
+}]);
