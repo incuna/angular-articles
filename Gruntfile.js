@@ -166,7 +166,7 @@ module.exports = function (grunt) {
                 browsers: ['Firefox'],
                 singleRun: true
             },
-            ci: {
+            travis: {
                 reporters: ['dots', 'coverage'],
                 coverageReporter: {
                     type: 'lcovonly',
