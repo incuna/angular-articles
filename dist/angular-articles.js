@@ -1,4 +1,4 @@
-/*! angular-articles - v0.0.0 - 2015-02-03 */
+/*! angular-articles - v0.0.0 - 2015-02-03 14:01:49 */
 (function (angular, _) {
     'use strict';
 

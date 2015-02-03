@@ -111,7 +111,7 @@ module.exports = function (grunt) {
             options: {
                 stripBanners: true,
                 banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                    '<%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                    '<%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */\n'
             },
             dist: {
                 src: [
