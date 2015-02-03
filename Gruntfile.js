@@ -23,11 +23,12 @@ module.exports = function (grunt) {
             dist: 'dist',
             lib: 'lib',
             src: 'src',
+            test: 'test',
             files: {
                 src: '<%= config.src %>/<%= pkg.name %>.js',
                 dist: '<%= config.dist %>/<%= pkg.name %>.js',
                 distMin: '<%= config.dist %>/<%= pkg.name %>.min.js',
-                test: 'test/**/*.js',
+                test: '<%= config.test %>/**/*.js',
                 unit: ['<%= config.files.src %>', '<%= config.files.test %>'],
                 unitDist: ['<%= config.files.dist %>', '<%= config.files.test %>'],
                 templatesHTML: '<%= config.src %>/templates/**/*.html',
@@ -136,12 +137,7 @@ module.exports = function (grunt) {
                     '<%= config.lib %>/angular-mocks/angular-mocks.js',
                     '<%= config.lib %>/angular-route/angular-route.js',
                     '<%= config.lib %>/lodash/dist/lodash.js',
-                    'node_modules/jasmine-expect/dist/jasmine-matchers.js',
-                    // First the module file.
-                    '<%= config.files.src %>',
-                    // Then the rest of the src files.
-                    '<%= config.files.templatesJS %>',
-                    '<%= config.files.test %>'
+                    'node_modules/jasmine-expect/dist/jasmine-matchers.js'
                 ],
                 exclude: [],
                 frameworks: ['jasmine'],
@@ -153,9 +149,11 @@ module.exports = function (grunt) {
                 ],
                 preprocessors: {
                     '<%= config.files.templatesHTML %>': 'ng-html2js',
-                    '<%= config.files.unit %>': 'coverage'
+                    '<%= config.files.src %>': 'coverage',
+                    '<%= config.files.templatesJS %>': 'coverage',
+                    '<%= config.files.dist %>': 'coverage'
                 },
-                reporters: ['dots'],
+                reporters: ['dots', 'coverage'],
                 coverageReporter: {
                     dir: 'coverage',
                     type: 'lcov'
@@ -167,7 +165,6 @@ module.exports = function (grunt) {
                 singleRun: true
             },
             travis: {
-                reporters: ['dots', 'coverage'],
                 coverageReporter: {
                     type: 'lcovonly',
                     // Travis uses this path: coverage/lcov.info
@@ -175,28 +172,46 @@ module.exports = function (grunt) {
                     file: 'lcov.info'
                 },
                 logLevel: 'WARN',
-                options: {
-                    files: [
-                        '<%= config.lib %>/angular/angular.js',
-                        '<%= config.lib %>/angular-mocks/angular-mocks.js',
-                        '<%= config.lib %>/angular-route/angular-route.js',
-                        '<%= config.lib %>/lodash/dist/lodash.js',
-                        'node_modules/jasmine-expect/dist/jasmine-matchers.js',
-                        // Test the distribution in Travis.
-                        '<%= config.files.distMin %>',
-                        '<%= config.files.test %>'
-                    ]
-                }
+                // To merge target-specific files with the default ones above
+                // in options, the files property must be an array of objects,
+                // each one with a src property set to a string glob (no array)
+                // otherwise grunt-karma won't merge the two together.
+                files: [
+                    // Test the distribution in Travis.
+                    // jscs:disable requirePaddingNewLinesInObjects
+                    {src: '<%= config.files.dist %>'},
+                    {src: '<%= config.files.test %>'}
+                    // jscs:enable requirePaddingNewLinesInObjects
+                ]
+            },
+            dist: {
+                files: [
+                    // Test the minified distribution.
+                    // jscs:disable requirePaddingNewLinesInObjects
+                    {src: '<%= config.files.distMin %>'},
+                    {src: '<%= config.files.test %>'}
+                    // jscs:enable requirePaddingNewLinesInObjects
+                ]
+            },
+            unit: {
+                logLevel: 'INFO',
+                files: [
+                    // jscs:disable requirePaddingNewLinesInObjects
+                    // First the module file.
+                    {src: '<%= config.files.src %>'},
+                    // Then the rest of the src files.
+                    {src: '<%= config.files.templatesJS %>'},
+                    // Then the test files.
+                    {src: '<%= config.files.test %>'}
+                    // jscs:enable requirePaddingNewLinesInObjects
+                ]
             },
             watch: {
                 autoWatch: true,
                 singleRun: false,
                 // INFO level logs when a file is changed: better feedback.
-                logLevel: 'INFO'
-            },
-            unit: {
-                reporters: ['dots'],
-                logLevel: 'INFO'
+                logLevel: 'INFO',
+                files: '<%= karma.unit.files %>'
             }
         }
 
@@ -213,9 +228,10 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['concurrent:watch']);
     grunt.registerTask('lint', ['jshint', 'jscs']);
     grunt.registerTask('unit', ['clean:coverage', 'karma:unit']);
+    grunt.registerTask('unit:dist', ['clean:coverage', 'karma:dist']);
     grunt.registerTask('unit:travis', ['clean:coverage', 'karma:travis']);
     grunt.registerTask('test', ['lint', 'unit']);
-    grunt.registerTask('test:travis', ['ensure:dist', 'lint', 'unit:travis']);
+    grunt.registerTask('test:travis', ['ensure:dist', 'lint', 'unit:dist', 'unit:travis']);
     grunt.registerTask('dist', ['clean:dist', 'ngtemplates', 'concat:dist', 'uglify:dist']);
 
 };
