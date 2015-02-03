@@ -1,0 +1,7 @@
+<h1>Section: {{ section.slug }}</h1>
+<ul>
+    <li ng-repeat="article in articles">
+        <a ng-href="#/sections/{{ section.slug }}/articles/{{ article.slug }}/">Article: {{ article.slug }}</a>
+    </li>
+</ul>
+<a href="#/sections/{{ section.slug }}/">&lt;– Section: {{ section.slug }}</a>
