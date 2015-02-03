@@ -37,9 +37,6 @@
                 .when('/sections/:section/articles/:article/', {
                     controller: 'SectionsArticlesDetailCtrl',
                     templateUrl: 'templates/sections/articles-detail.html'
-                })
-                .otherwise({
-                    redirectTo: '/articles/'
                 });
         }
     ]);

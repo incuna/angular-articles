@@ -1,4 +1,4 @@
-/*! angular-articles - v0.0.0 - 2015-02-02 */
+/*! angular-articles - v0.0.0 - 2015-02-03 */
 (function (angular, _) {
     'use strict';
 
@@ -33,9 +33,6 @@
                 .when('/sections/:section/articles/:article/', {
                     controller: 'SectionsArticlesDetailCtrl',
                     templateUrl: 'templates/sections/articles-detail.html'
-                })
-                .otherwise({
-                    redirectTo: '/articles/'
                 });
         }
     ]);
