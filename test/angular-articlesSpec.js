@@ -110,12 +110,6 @@
                 });
             });
 
-            describe('otherwise', function () {
-                it('should redirect to /articles/', function () {
-                    expect($route.routes[null].redirectTo).toBe('/articles/');
-                });
-            });
-
         });
 
     });
