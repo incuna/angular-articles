@@ -1,4 +1,4 @@
-# angular-articles
+# angular-articles [![Build Status](https://travis-ci.org/incuna/angular-articles.svg?branch=master)](https://travis-ci.org/incuna/angular-articles) [![codecov.io](https://codecov.io/github/incuna/angular-articles/coverage.svg?branch=master)](https://codecov.io/github/incuna/angular-articles?branch=master)
 
 Articles of content for AngularJS.
 
