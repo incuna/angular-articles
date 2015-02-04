@@ -163,6 +163,7 @@
             describe('SectionsArticlesDetailCtrl', function () {
 
                 beforeEach(function () {
+
                     ctrl = $controller('SectionsArticlesDetailCtrl', {
                         $scope: $scope,
                         $routeParams: {
@@ -170,6 +171,7 @@
                             section: 'slug'
                         }
                     });
+
                 });
 
                 it('should be defined', function () {
@@ -184,7 +186,57 @@
                     expect($scope.article).toBe(dataMockList.slug);
                 });
 
-                it('should redirect to 404 if the article is not in the section');
+                describe('redirect', function () {
+
+                    var $location;
+
+                    beforeEach(function () {
+
+                        dataMockList = {
+                            section: {
+                                articles: [
+                                    'articleInSection'
+                                ]
+                            },
+                            articleInSection: 'articleData',
+                            articleNotInSection: 'articleData'
+                        };
+
+                        inject(function (_$location_) {
+                            $location = _$location_;
+                            // This must call through if $location.path() is
+                            // is chained with .replace()
+                            spyOn($location, 'path').and.callThrough();
+                            spyOn($location, 'replace');
+                        });
+
+                    });
+
+                    it('should not redirect to 404 if the article is found in the section', function () {
+                        ctrl = $controller('SectionsArticlesDetailCtrl', {
+                            $scope: $scope,
+                            $routeParams: {
+                                article: 'articleInSection',
+                                section: 'section'
+                            }
+                        });
+                        expect($location.path).not.toHaveBeenCalledWith('/404/');
+                        expect($location.replace).not.toHaveBeenCalled();
+                    });
+
+                    it('should redirect to 404 if the article is not in the section', function () {
+                        ctrl = $controller('SectionsArticlesDetailCtrl', {
+                            $scope: $scope,
+                            $routeParams: {
+                                article: 'articleNotInSection',
+                                section: 'section'
+                            }
+                        });
+                        expect($location.path).toHaveBeenCalledWith('/404/');
+                        expect($location.replace).toHaveBeenCalled();
+                    });
+
+                });
 
             });
 
