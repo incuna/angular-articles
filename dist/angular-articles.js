@@ -1,4 +1,4 @@
-/*! angular-articles - v0.0.0 - 2015-02-03 14:01:49 */
+/*! angular-articles - v0.0.0 - 2015-02-04 16:47:46 */
 (function (angular, _) {
     'use strict';
 
@@ -6,83 +6,51 @@
         'ngRoute'
     ]);
 
-    module.config([
-        '$routeProvider',
-        function ($routeProvider) {
-            $routeProvider
-                .when('/articles/', {
-                    controller: 'ArticlesListCtrl',
-                    templateUrl: 'templates/articles/list.html'
-                })
-                .when('/articles/:article/', {
-                    controller: 'ArticlesDetailCtrl',
-                    templateUrl: 'templates/articles/detail.html'
-                })
-                .when('/sections/', {
-                    controller: 'SectionsListCtrl',
-                    templateUrl: 'templates/sections/list.html'
-                })
-                .when('/sections/:section/', {
-                    controller: 'SectionsDetailCtrl',
-                    templateUrl: 'templates/sections/detail.html'
-                })
-                .when('/sections/:section/articles/', {
-                    controller: 'SectionsArticlesListCtrl',
-                    templateUrl: 'templates/sections/articles-list.html'
-                })
-                .when('/sections/:section/articles/:article/', {
-                    controller: 'SectionsArticlesDetailCtrl',
-                    templateUrl: 'templates/sections/articles-detail.html'
-                });
+    // Override the backend to provide your own data, like so:
+    /*
+    angular.module('articles').config([
+        '$provide',
+        function ($provide) {
+            $provide.decorator('articlesBackend', [
+                '$delegate',
+                function ($delegate) {
+                    // Use $delegate so this library's methods stay intact.
+                    $delegate.requiredMethod = function () {};
+                    $delegate.otherRequiredMethod = function () {};
+                    return $delegate;
+                }
+            ]);
         }
     ]);
+    */
+    // Currently the library does not have any of its own methods to provide.
+    module.factory('articlesBackend', angular.noop);
 
-    // Override this with a decorator to provide your own data.
-    module.service('articlesBackend', [
-        function () {
-            var defaults = {
-                articles: {
-                    temp: {}
-                },
-                sections: {
-                    temp: {
-                        articles: ['temp']
-                    }
-                },
-                flows: {
-                    temp: {
-                        sections: ['temp']
-                    }
+    module.run([
+        '$log', 'articlesBackend',
+        function ($log, articlesBackend) {
+            // Ensure a backend is provided.
+            if (articlesBackend === angular.noop) {
+                throw new Error('articles: articlesBackend must be provided. See source code for example.');
+            }
+            var requiredMethods = [
+                'getArticles',
+                'getArticle',
+                'getSections',
+                'getSection',
+                'getFlows',
+                'getFlow'
+            ];
+            var hasErrored = false;
+            angular.forEach(requiredMethods, function (method) {
+                if (!_.has(articlesBackend, method)) {
+                    hasErrored = true;
+                    $log.error('articles: articlesBackend must provide a ' + method + ' method.');
                 }
-            };
-            var getListWithSlug = function (data) {
-                return _.map(data, getObjectWithSlug);
-            };
-            var getObjectWithSlug = function (data, slug) {
-                return angular.extend({
-                    slug: slug
-                }, data);
-            };
-            return {
-                getArticles: function () {
-                    return getListWithSlug(defaults.articles);
-                },
-                getArticle: function (slug) {
-                    return getObjectWithSlug(defaults.articles[slug], slug);
-                },
-                getSections: function () {
-                    return getListWithSlug(defaults.sections);
-                },
-                getSection: function (slug) {
-                    return getObjectWithSlug(defaults.sections[slug], slug);
-                },
-                getFlows: function () {
-                    return getListWithSlug(defaults.flows);
-                },
-                getFlow: function (slug) {
-                    return getObjectWithSlug(defaults.flows[slug], slug);
-                }
-            };
+            });
+            if (hasErrored) {
+                throw new Error('articles: articlesBackend is not providing required methods.');
+            }
         }
     ]);
 
@@ -117,6 +85,37 @@
                     return _.map(flow.sections, articlesBackend.getSection);
                 }
             };
+        }
+    ]);
+
+    module.config([
+        '$routeProvider',
+        function ($routeProvider) {
+            $routeProvider
+                .when('/articles/', {
+                    controller: 'ArticlesListCtrl',
+                    templateUrl: 'templates/articles/list.html'
+                })
+                .when('/articles/:article/', {
+                    controller: 'ArticlesDetailCtrl',
+                    templateUrl: 'templates/articles/detail.html'
+                })
+                .when('/sections/', {
+                    controller: 'SectionsListCtrl',
+                    templateUrl: 'templates/sections/list.html'
+                })
+                .when('/sections/:section/', {
+                    controller: 'SectionsDetailCtrl',
+                    templateUrl: 'templates/sections/detail.html'
+                })
+                .when('/sections/:section/articles/', {
+                    controller: 'SectionsArticlesListCtrl',
+                    templateUrl: 'templates/sections/articles-list.html'
+                })
+                .when('/sections/:section/articles/:article/', {
+                    controller: 'SectionsArticlesDetailCtrl',
+                    templateUrl: 'templates/sections/articles-detail.html'
+                });
         }
     ]);
 

@@ -17,14 +17,10 @@
 
             beforeEach(function () {
 
-                articlesBackendMock = {};
-
-                module(function ($provide) {
-                    $provide.value('articlesBackend', articlesBackendMock);
-                });
-
-                inject(function (_articlesDataService_) {
+                inject(function (_articlesDataService_, _articlesBackend_) {
                     articlesDataService = _articlesDataService_;
+                    // Use the mocked backend provided in test/helpers.js
+                    articlesBackendMock = _articlesBackend_;
                 });
 
             });
