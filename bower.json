@@ -24,7 +24,8 @@
   ],
   "dependencies": {
     "angular": ">=1.2",
-    "angular-route": ">=1.2"
+    "angular-route": ">=1.2",
+    "lodash": "~2"
   },
   "devDependencies": {
     "angular": "1.2",
