@@ -48,7 +48,9 @@
                 'getSections',
                 'getSection',
                 'getFlows',
-                'getFlow'
+                'getFlow',
+                'getArticlesForSection',
+                'getSectionsForFlow'
             ];
             var hasErrored = false;
             angular.forEach(requiredMethods, function (method) {
@@ -68,32 +70,14 @@
         'articlesBackend',
         function (articlesBackend) {
             return {
-                getArticles: function () {
-                    return articlesBackend.getArticles();
-                },
-                getArticle: function (slug) {
-                    return articlesBackend.getArticle(slug);
-                },
-                getSections: function () {
-                    return articlesBackend.getSections();
-                },
-                getSection: function (slug) {
-                    return articlesBackend.getSection(slug);
-                },
-                getFlows: function () {
-                    return articlesBackend.getFlows();
-                },
-                getFlow: function (slug) {
-                    return articlesBackend.getFlow(slug);
-                },
-                getArticlesForSection: function (slug) {
-                    var section = articlesBackend.getSection(slug);
-                    return _.map(section.articles, articlesBackend.getArticle);
-                },
-                getSectionsForFlow: function (slug) {
-                    var flow = articlesBackend.getFlow(slug);
-                    return _.map(flow.sections, articlesBackend.getSection);
-                }
+                getArticles: articlesBackend.getArticles,
+                getArticle: articlesBackend.getArticle,
+                getSections: articlesBackend.getSections,
+                getSection: articlesBackend.getSection,
+                getFlows: articlesBackend.getFlows,
+                getFlow: articlesBackend.getFlow,
+                getArticlesForSection: articlesBackend.getArticlesForSection,
+                getSectionsForFlow: articlesBackend.getSectionsForFlow
             };
         }
     ]);
