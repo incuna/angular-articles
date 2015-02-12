@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                 src: '<%= config.src %>/<%= pkg.name %>.js',
                 dist: '<%= config.dist %>/<%= pkg.name %>.js',
                 distMin: '<%= config.dist %>/<%= pkg.name %>.min.js',
-                test: '<%= config.test %>/**/*-spec.js',
+                test: '<%= config.test %>/spec/**/*.js',
                 unit: ['<%= config.files.src %>', '<%= config.files.test %>'],
                 unitDist: ['<%= config.files.dist %>', '<%= config.files.test %>'],
                 templatesHTML: '<%= config.src %>/templates/**/*.html',
@@ -138,7 +138,7 @@ module.exports = function (grunt) {
                     '<%= config.lib %>/angular-route/angular-route.js',
                     '<%= config.lib %>/lodash/dist/lodash.js',
                     'node_modules/jasmine-expect/dist/jasmine-matchers.js',
-                    '<%= config.test %>/**/*-mock.js'
+                    '<%= config.test %>/mock/**/*.js'
                 ],
                 exclude: [],
                 frameworks: ['jasmine'],
