@@ -1,4 +1,4 @@
-/*! angular-articles - v0.0.0 - 2015-02-04 16:47:46 */
+/*! angular-articles - v0.0.0 - 2015-02-12 19:39:56 */
 (function (angular, _) {
     'use strict';
 
@@ -24,22 +24,29 @@
     ]);
     */
     // Currently the library does not have any of its own methods to provide.
-    module.factory('articlesBackend', angular.noop);
+    module.factory('articlesBackend', function () {
+        return {};
+    });
 
     module.run([
         '$log', 'articlesBackend',
         function ($log, articlesBackend) {
+
             // Ensure a backend is provided.
-            if (articlesBackend === angular.noop) {
+            if (_.isEmpty(articlesBackend)) {
                 throw new Error('articles: articlesBackend must be provided. See source code for example.');
             }
+
+            // Ensure certain methods are provided on the backend.
             var requiredMethods = [
                 'getArticles',
                 'getArticle',
                 'getSections',
                 'getSection',
                 'getFlows',
-                'getFlow'
+                'getFlow',
+                'getArticlesForSection',
+                'getSectionsForFlow'
             ];
             var hasErrored = false;
             angular.forEach(requiredMethods, function (method) {
@@ -51,6 +58,7 @@
             if (hasErrored) {
                 throw new Error('articles: articlesBackend is not providing required methods.');
             }
+
         }
     ]);
 
@@ -58,32 +66,14 @@
         'articlesBackend',
         function (articlesBackend) {
             return {
-                getArticles: function () {
-                    return articlesBackend.getArticles();
-                },
-                getArticle: function (slug) {
-                    return articlesBackend.getArticle(slug);
-                },
-                getSections: function () {
-                    return articlesBackend.getSections();
-                },
-                getSection: function (slug) {
-                    return articlesBackend.getSection(slug);
-                },
-                getFlows: function () {
-                    return articlesBackend.getFlows();
-                },
-                getFlow: function (slug) {
-                    return articlesBackend.getFlow(slug);
-                },
-                getArticlesForSection: function (slug) {
-                    var section = articlesBackend.getSection(slug);
-                    return _.map(section.articles, articlesBackend.getArticle);
-                },
-                getSectionsForFlow: function (slug) {
-                    var flow = articlesBackend.getFlow(slug);
-                    return _.map(flow.sections, articlesBackend.getSection);
-                }
+                getArticles: articlesBackend.getArticles,
+                getArticle: articlesBackend.getArticle,
+                getSections: articlesBackend.getSections,
+                getSection: articlesBackend.getSection,
+                getFlows: articlesBackend.getFlows,
+                getFlow: articlesBackend.getFlow,
+                getArticlesForSection: articlesBackend.getArticlesForSection,
+                getSectionsForFlow: articlesBackend.getSectionsForFlow
             };
         }
     ]);
