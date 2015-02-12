@@ -28,14 +28,16 @@
     ]);
     */
     // Currently the library does not have any of its own methods to provide.
-    module.factory('articlesBackend', angular.noop);
+    module.factory('articlesBackend', function () {
+        return {};
+    });
 
     module.run([
         '$log', 'articlesBackend',
         function ($log, articlesBackend) {
 
             // Ensure a backend is provided.
-            if (articlesBackend === angular.noop) {
+            if (_.isEmpty(articlesBackend)) {
                 throw new Error('articles: articlesBackend must be provided. See source code for example.');
             }
 
