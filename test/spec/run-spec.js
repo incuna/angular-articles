@@ -20,11 +20,6 @@
 
         it('should error when a backend is not provided', function () {
 
-            module(function ($provide) {
-                // Provide the default backend to override the backend-mock.
-                $provide.value('articlesBackend', angular.noop);
-            });
-
             // Run the module and ensure an error is thrown.
             expect(run).toThrowError('articles: articlesBackend must be provided. See source code for example.');
         });

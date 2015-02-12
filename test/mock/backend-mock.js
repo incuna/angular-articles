@@ -1,31 +1,32 @@
-/* global beforeEach, module */
+/* global beforeEach, afterEach */
 (function (angular) {
 
     'use strict';
 
     beforeEach(function () {
-        module('articles');
 
-        var articlesBackendMock = {};
+        window.articlesBackendMock = {};
 
         // Mock all the required methods for the backend, otherwise the module
-        // will error.
+        // will error during tests.
         var requiredMethods = [
             'getArticles',
             'getArticle',
             'getSections',
             'getSection',
             'getFlows',
-            'getFlow'
+            'getFlow',
+            'getArticlesForSection',
+            'getSectionsForFlow'
         ];
         angular.forEach(requiredMethods, function (method) {
-            articlesBackendMock[method] = angular.noop;
+            window.articlesBackendMock[method] = angular.noop;
         });
 
-        module(function ($provide) {
-            $provide.value('articlesBackend', articlesBackendMock);
-        });
+    });
 
+    afterEach(function () {
+        window.articlesBackendMock = null;
     });
 
 }(window.angular));

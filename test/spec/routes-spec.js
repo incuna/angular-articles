@@ -9,6 +9,13 @@
 
     describe('Unit: articles', function () {
 
+        beforeEach(function () {
+            module(function ($provide) {
+                // Use the mocked backend provided on the window object.
+                $provide.value('articlesBackend', window.articlesBackendMock);
+            });
+        });
+
         describe('routes', function () {
 
             var $route;
