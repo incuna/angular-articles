@@ -20,6 +20,10 @@
 
         it('should error when a backend is not provided', function () {
 
+            module(function ($provide) {
+                $provide.value('articlesBackend', null);
+            });
+
             // Run the module and ensure an error is thrown.
             expect(run).toThrowError('articles: articlesBackend must be provided. See source code for example.');
         });
@@ -32,8 +36,12 @@
 
             module(function ($provide) {
                 // Provide an empty backend and a mocked $log service.
-                $provide.value('articlesBackend', {});
                 $provide.value('$log', $logMock);
+                $provide.decorator('articlesBackend', function ($delegate) {
+                    $delegate.getArticles = angular.noop;
+                    $delegate.getArticle = angular.noop;
+                    return $delegate;
+                });
             });
 
             // Run the module and ensure an error is thrown.
@@ -41,15 +49,23 @@
 
             // Ensure $log was called with each specific method missing.
             var requiredMethods = [
-                'getArticles',
-                'getArticle',
                 'getSections',
                 'getSection',
                 'getFlows',
-                'getFlow'
+                'getFlow',
+                'getArticlesForSection',
+                'getSectionsForFlow'
             ];
             angular.forEach(requiredMethods, function (method) {
                 expect($logMock.error).toHaveBeenCalledWith('articles: articlesBackend must provide a ' + method + ' method.');
+            });
+
+            var providedMethods = [
+                'getArticles',
+                'getArticle'
+            ];
+            angular.forEach(providedMethods, function (method) {
+                expect($logMock.error).not.toHaveBeenCalledWith('articles: articlesBackend must provide a ' + method + ' method.');
             });
 
         });

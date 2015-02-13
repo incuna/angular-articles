@@ -27,9 +27,8 @@
         }
     ]);
     */
-    var emptyBackend = {};
     module.factory('articlesBackend', function () {
-        return emptyBackend;
+        return {};
     });
 
     module.run([
@@ -37,7 +36,7 @@
         function ($log, articlesBackend) {
 
             // Ensure a backend is provided.
-            if (articlesBackend === emptyBackend) {
+            if (!articlesBackend) {
                 throw new Error('articles: articlesBackend must be provided. See source code for example.');
             }
 
