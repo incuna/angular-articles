@@ -1,0 +1,8 @@
+<h1>Flow: {{ flow.slug }}</h1>
+<h1>Section: {{ section.slug }}</h1>
+<ul>
+    <li ng-repeat="article in articles">
+        <a ng-href="#/flows/{{ flow.slug }}/sections/{{ section.slug }}/articles/{{ article.slug }}/">Article: {{ article.slug }}</a>
+    </li>
+</ul>
+<a href="#/flows/{{ flow.slug }}/sections/{{ section.slug }}/">&lt;– Flow section: {{ section.slug }}</a>

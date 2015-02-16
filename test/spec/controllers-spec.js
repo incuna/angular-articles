@@ -142,6 +142,46 @@
 
             });
 
+            describe('FlowsListCtrl', function () {
+
+                beforeEach(function () {
+                    spyOn(articlesDataServiceMock, 'getFlows').and.callThrough();
+                    ctrl = $controller('FlowsListCtrl', {
+                        $scope: $scope
+                    });
+                });
+
+                it('should be defined', function () {
+                    expect(ctrl).toBeDefined();
+                });
+
+                it('should set $scope.flows to the return of articlesDataService.getFlows', function () {
+                    expect($scope.flows).toBe(dataMockList);
+                });
+
+            });
+
+            describe('FlowsDetailCtrl', function () {
+
+                beforeEach(function () {
+                    ctrl = $controller('FlowsDetailCtrl', {
+                        $scope: $scope,
+                        $routeParams: {
+                            flow: 'slug'
+                        }
+                    });
+                });
+
+                it('should be defined', function () {
+                    expect(ctrl).toBeDefined();
+                });
+
+                it('should set $scope.flow to the return of articlesDataService.getFlow when given a slug', function () {
+                    expect($scope.flow).toBe(dataMockList.slug);
+                });
+
+            });
+
             describe('SectionsArticlesListCtrl', function () {
 
                 beforeEach(function () {
@@ -243,6 +283,31 @@
                         expect($location.replace).toHaveBeenCalled();
                     });
 
+                });
+
+            });
+
+            describe('FlowsSectionsListCtrl', function () {
+
+                beforeEach(function () {
+                    ctrl = $controller('FlowsSectionsListCtrl', {
+                        $scope: $scope,
+                        $routeParams: {
+                            flow: 'slug'
+                        }
+                    });
+                });
+
+                it('should be defined', function () {
+                    expect(ctrl).toBeDefined();
+                });
+
+                it('should set $scope.section to the return of articlesDataService.getFlow when given a slug', function () {
+                    expect($scope.flow).toBe(dataMockList.slug);
+                });
+
+                it('should set $scope.article to the return of articlesDataService.getSectionsForFlow when given a slug', function () {
+                    expect($scope.sections).toBe(dataMockList.slug);
                 });
 
             });

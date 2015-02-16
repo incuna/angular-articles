@@ -1,0 +1,5 @@
+<h1>Flow: {{ flow.slug }}</h1>
+<h1>Section: {{ section.slug }}</h1>
+<h2>Article: {{ article.slug }}</h2>
+<div ng-include="article.templateUrl"></div>
+<a href="#/flows/{{ flow.slug }}/sections/{{ section.slug }}/articles/">&lt;– Flow section articles: {{ section.slug }}</a>

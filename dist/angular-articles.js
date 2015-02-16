@@ -1,4 +1,4 @@
-/*! angular-articles - v0.0.0 - 2015-02-13 11:23:15 */
+/*! angular-articles - v0.0.0 - 2015-02-16 09:45:23 */
 (function (angular, _) {
     'use strict';
 
@@ -98,6 +98,14 @@
                     controller: 'SectionsDetailCtrl',
                     templateUrl: 'templates/sections/detail.html'
                 })
+                .when('/flows/', {
+                    controller: 'FlowsListCtrl',
+                    templateUrl: 'templates/flows/list.html'
+                })
+                .when('/flows/:flow/', {
+                    controller: 'FlowsDetailCtrl',
+                    templateUrl: 'templates/flows/detail.html'
+                })
                 .when('/sections/:section/articles/', {
                     controller: 'SectionsArticlesListCtrl',
                     templateUrl: 'templates/sections/articles-list.html'
@@ -105,6 +113,22 @@
                 .when('/sections/:section/articles/:article/', {
                     controller: 'SectionsArticlesDetailCtrl',
                     templateUrl: 'templates/sections/articles-detail.html'
+                })
+                .when('/flows/:flow/sections/', {
+                    controller: 'FlowsSectionsListCtrl',
+                    templateUrl: 'templates/flows/sections-list.html'
+                })
+                .when('/flows/:flow/sections/:section/', {
+                    controller: 'FlowsSectionsDetailCtrl',
+                    templateUrl: 'templates/flows/sections-detail.html'
+                })
+                .when('/flows/:flow/sections/:section/articles/', {
+                    controller: 'FlowsSectionsArticlesListCtrl',
+                    templateUrl: 'templates/flows/sections-articles-list.html'
+                })
+                .when('/flows/:flow/sections/:section/articles/:article/', {
+                    controller: 'FlowsSectionsArticlesDetailCtrl',
+                    templateUrl: 'templates/flows/sections-articles-detail.html'
                 });
         }
     ]);
@@ -139,6 +163,21 @@
         }
     ]);
 
+    module.controller('FlowsListCtrl', [
+        '$scope', 'articlesDataService',
+        function ($scope, articlesDataService) {
+            $scope.flows = articlesDataService.getFlows();
+        }
+    ]);
+
+    module.controller('FlowsDetailCtrl', [
+        '$scope', '$routeParams', 'articlesDataService',
+        function ($scope, $routeParams, articlesDataService) {
+            var slug = $routeParams.flow;
+            $scope.flow = articlesDataService.getFlow(slug);
+        }
+    ]);
+
     module.controller('SectionsArticlesListCtrl', [
         '$scope', '$routeParams', 'articlesDataService',
         function ($scope, $routeParams, articlesDataService) {
@@ -162,6 +201,60 @@
         }
     ]);
 
+    module.controller('FlowsSectionsListCtrl', [
+        '$scope', '$routeParams', 'articlesDataService',
+        function ($scope, $routeParams, articlesDataService) {
+            var slug = $routeParams.flow;
+            $scope.flow = articlesDataService.getFlow(slug);
+            $scope.sections = articlesDataService.getSectionsForFlow(slug);
+        }
+    ]);
+
+    module.controller('FlowsSectionsDetailCtrl', [
+        '$scope', '$routeParams', '$location', 'articlesDataService',
+        function ($scope, $routeParams, $location, articlesDataService) {
+            var flowSlug = $routeParams.flow;
+            var sectionSlug = $routeParams.section;
+            $scope.flow = articlesDataService.getFlow(flowSlug);
+            $scope.section = articlesDataService.getSection(sectionSlug);
+            if (!_.contains($scope.flow.sections, sectionSlug)) {
+                // Section is not in this flow.
+                $location.path('/404/').replace();
+            }
+        }
+    ]);
+
+    module.controller('FlowsSectionsArticlesListCtrl', [
+        '$scope', '$routeParams', '$location', 'articlesDataService',
+        function ($scope, $routeParams, $location, articlesDataService) {
+            var flowSlug = $routeParams.flow;
+            var sectionSlug = $routeParams.section;
+            $scope.flow = articlesDataService.getFlow(flowSlug);
+            $scope.section = articlesDataService.getSection(sectionSlug);
+            $scope.articles = articlesDataService.getArticlesForSection(sectionSlug);
+            if (!_.contains($scope.flow.sections, sectionSlug)) {
+                // Section is not in this flow.
+                $location.path('/404/').replace();
+            }
+        }
+    ]);
+
+    module.controller('FlowsSectionsArticlesDetailCtrl', [
+        '$scope', '$routeParams', '$location', 'articlesDataService',
+        function ($scope, $routeParams, $location, articlesDataService) {
+            var flowSlug = $routeParams.flow;
+            var sectionSlug = $routeParams.section;
+            var articleSlug = $routeParams.article;
+            $scope.flow = articlesDataService.getFlow(flowSlug);
+            $scope.section = articlesDataService.getSection(sectionSlug);
+            $scope.article = articlesDataService.getArticle(articleSlug);
+            if (!_.contains($scope.flow.sections, sectionSlug) && !_.contains($scope.section.articles, articleSlug)) {
+                // Section is not in this flow, or article is not in this section.
+                $location.path('/404/').replace();
+            }
+        }
+    ]);
+
 }(window.angular, window._));
 
 angular.module('articles').run(['$templateCache', function($templateCache) {
@@ -174,6 +267,36 @@ angular.module('articles').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('templates/articles/list.html',
     "<h1>Articles</h1><ul><li ng-repeat=\"article in articles\"><a ng-href=\"#/articles/{{ article.slug }}/\">Article: {{ article.slug }}</a></li></ul>"
+  );
+
+
+  $templateCache.put('templates/flows/detail.html',
+    "<h1>Flow: {{ flow.slug }}</h1><a href=\"#/flows/\">&lt;– Flows</a> <a href=\"#/flows/{{ flow.slug }}/sections/\">Sections of {{ flow.slug }} – &gt;</a>"
+  );
+
+
+  $templateCache.put('templates/flows/list.html',
+    "<h1>Flows</h1><ul><li ng-repeat=\"flow in flows\"><a ng-href=\"#/flows/{{ flow.slug }}/\">Flow: {{ flow.slug }}</a></li></ul>"
+  );
+
+
+  $templateCache.put('templates/flows/sections-articles-detail.html',
+    "<h1>Flow: {{ flow.slug }}</h1><h1>Section: {{ section.slug }}</h1><h2>Article: {{ article.slug }}</h2><div ng-include=article.templateUrl></div><a href=\"#/flows/{{ flow.slug }}/sections/{{ section.slug }}/articles/\">&lt;– Flow section articles: {{ section.slug }}</a>"
+  );
+
+
+  $templateCache.put('templates/flows/sections-articles-list.html',
+    "<h1>Flow: {{ flow.slug }}</h1><h1>Section: {{ section.slug }}</h1><ul><li ng-repeat=\"article in articles\"><a ng-href=\"#/flows/{{ flow.slug }}/sections/{{ section.slug }}/articles/{{ article.slug }}/\">Article: {{ article.slug }}</a></li></ul><a href=\"#/flows/{{ flow.slug }}/sections/{{ section.slug }}/\">&lt;– Flow section: {{ section.slug }}</a>"
+  );
+
+
+  $templateCache.put('templates/flows/sections-detail.html',
+    "<h2>Flow: {{ flow.slug }}</h2><h1>Section: {{ section.slug }}</h1><a href=\"#/flows/{{ flow.slug }}/sections/\">&lt;– Flow sections: {{ flow.slug }}</a> <a href=\"#/flows/{{ flow.slug }}/sections/{{ section.slug }}/articles/\">Articles of {{ section.slug }} – &gt;</a>"
+  );
+
+
+  $templateCache.put('templates/flows/sections-list.html',
+    "<h1>Flow: {{ flow.slug }}</h1><h2>Sections</h2><ul><li ng-hide=sections.length>No sections</li><li ng-repeat=\"section in sections\"><a ng-href=\"#/flows/{{ flow.slug }}/sections/{{ section.slug }}/\">Section: {{ section.slug }}</a></li></ul><a href=\"#/flows/{{ flow.slug }}/\">&lt;– Flow: {{ flow.slug }}</a>"
   );
 
 

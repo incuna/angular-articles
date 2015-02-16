@@ -102,6 +102,14 @@
                     controller: 'SectionsDetailCtrl',
                     templateUrl: 'templates/sections/detail.html'
                 })
+                .when('/flows/', {
+                    controller: 'FlowsListCtrl',
+                    templateUrl: 'templates/flows/list.html'
+                })
+                .when('/flows/:flow/', {
+                    controller: 'FlowsDetailCtrl',
+                    templateUrl: 'templates/flows/detail.html'
+                })
                 .when('/sections/:section/articles/', {
                     controller: 'SectionsArticlesListCtrl',
                     templateUrl: 'templates/sections/articles-list.html'
@@ -109,6 +117,22 @@
                 .when('/sections/:section/articles/:article/', {
                     controller: 'SectionsArticlesDetailCtrl',
                     templateUrl: 'templates/sections/articles-detail.html'
+                })
+                .when('/flows/:flow/sections/', {
+                    controller: 'FlowsSectionsListCtrl',
+                    templateUrl: 'templates/flows/sections-list.html'
+                })
+                .when('/flows/:flow/sections/:section/', {
+                    controller: 'FlowsSectionsDetailCtrl',
+                    templateUrl: 'templates/flows/sections-detail.html'
+                })
+                .when('/flows/:flow/sections/:section/articles/', {
+                    controller: 'FlowsSectionsArticlesListCtrl',
+                    templateUrl: 'templates/flows/sections-articles-list.html'
+                })
+                .when('/flows/:flow/sections/:section/articles/:article/', {
+                    controller: 'FlowsSectionsArticlesDetailCtrl',
+                    templateUrl: 'templates/flows/sections-articles-detail.html'
                 });
         }
     ]);
@@ -143,6 +167,21 @@
         }
     ]);
 
+    module.controller('FlowsListCtrl', [
+        '$scope', 'articlesDataService',
+        function ($scope, articlesDataService) {
+            $scope.flows = articlesDataService.getFlows();
+        }
+    ]);
+
+    module.controller('FlowsDetailCtrl', [
+        '$scope', '$routeParams', 'articlesDataService',
+        function ($scope, $routeParams, articlesDataService) {
+            var slug = $routeParams.flow;
+            $scope.flow = articlesDataService.getFlow(slug);
+        }
+    ]);
+
     module.controller('SectionsArticlesListCtrl', [
         '$scope', '$routeParams', 'articlesDataService',
         function ($scope, $routeParams, articlesDataService) {
@@ -161,6 +200,60 @@
             $scope.article = articlesDataService.getArticle(articleSlug);
             if (!_.contains($scope.section.articles, articleSlug)) {
                 // Article is not in this section.
+                $location.path('/404/').replace();
+            }
+        }
+    ]);
+
+    module.controller('FlowsSectionsListCtrl', [
+        '$scope', '$routeParams', 'articlesDataService',
+        function ($scope, $routeParams, articlesDataService) {
+            var slug = $routeParams.flow;
+            $scope.flow = articlesDataService.getFlow(slug);
+            $scope.sections = articlesDataService.getSectionsForFlow(slug);
+        }
+    ]);
+
+    module.controller('FlowsSectionsDetailCtrl', [
+        '$scope', '$routeParams', '$location', 'articlesDataService',
+        function ($scope, $routeParams, $location, articlesDataService) {
+            var flowSlug = $routeParams.flow;
+            var sectionSlug = $routeParams.section;
+            $scope.flow = articlesDataService.getFlow(flowSlug);
+            $scope.section = articlesDataService.getSection(sectionSlug);
+            if (!_.contains($scope.flow.sections, sectionSlug)) {
+                // Section is not in this flow.
+                $location.path('/404/').replace();
+            }
+        }
+    ]);
+
+    module.controller('FlowsSectionsArticlesListCtrl', [
+        '$scope', '$routeParams', '$location', 'articlesDataService',
+        function ($scope, $routeParams, $location, articlesDataService) {
+            var flowSlug = $routeParams.flow;
+            var sectionSlug = $routeParams.section;
+            $scope.flow = articlesDataService.getFlow(flowSlug);
+            $scope.section = articlesDataService.getSection(sectionSlug);
+            $scope.articles = articlesDataService.getArticlesForSection(sectionSlug);
+            if (!_.contains($scope.flow.sections, sectionSlug)) {
+                // Section is not in this flow.
+                $location.path('/404/').replace();
+            }
+        }
+    ]);
+
+    module.controller('FlowsSectionsArticlesDetailCtrl', [
+        '$scope', '$routeParams', '$location', 'articlesDataService',
+        function ($scope, $routeParams, $location, articlesDataService) {
+            var flowSlug = $routeParams.flow;
+            var sectionSlug = $routeParams.section;
+            var articleSlug = $routeParams.article;
+            $scope.flow = articlesDataService.getFlow(flowSlug);
+            $scope.section = articlesDataService.getSection(sectionSlug);
+            $scope.article = articlesDataService.getArticle(articleSlug);
+            if (!_.contains($scope.flow.sections, sectionSlug) && !_.contains($scope.section.articles, articleSlug)) {
+                // Section is not in this flow, or article is not in this section.
                 $location.path('/404/').replace();
             }
         }
