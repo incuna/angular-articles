@@ -10,6 +10,78 @@
         'ngRoute'
     ]);
 
+    // Override the backend to provide your own data, like so:
+    /*
+    angular.module('articles').config([
+        '$provide',
+        function ($provide) {
+            $provide.decorator('articlesBackend', [
+                '$delegate',
+                function ($delegate) {
+                    // Use $delegate so this library's methods stay intact.
+                    $delegate.requiredMethod = function () {};
+                    $delegate.otherRequiredMethod = function () {};
+                    return $delegate;
+                }
+            ]);
+        }
+    ]);
+    */
+    module.factory('articlesBackend', function () {
+        return {};
+    });
+
+    module.run([
+        '$log', 'articlesBackend',
+        function ($log, articlesBackend) {
+
+            // Ensure a backend is provided.
+            if (!articlesBackend) {
+                throw new Error('articles: articlesBackend must be provided. See source code for example.');
+            }
+
+            // Ensure certain methods are provided on the backend.
+            var requiredMethods = [
+                'getArticles',
+                'getArticle',
+                'getSections',
+                'getSection',
+                'getFlows',
+                'getFlow',
+                'getArticlesForSection',
+                'getSectionsForFlow'
+            ];
+            var hasErrored = false;
+            angular.forEach(requiredMethods, function (method) {
+                if (!_.has(articlesBackend, method)) {
+                    hasErrored = true;
+                    $log.error('articles: articlesBackend must provide a ' + method + ' method.');
+                }
+            });
+            if (hasErrored) {
+                throw new Error('articles: articlesBackend is not providing required methods.');
+            }
+
+        }
+    ]);
+
+    module.factory('articlesDataService', [
+        'articlesBackend',
+        function (articlesBackend) {
+            // Currently the library has no methods of its own to provide.
+            return {
+                getArticles: articlesBackend.getArticles,
+                getArticle: articlesBackend.getArticle,
+                getSections: articlesBackend.getSections,
+                getSection: articlesBackend.getSection,
+                getFlows: articlesBackend.getFlows,
+                getFlow: articlesBackend.getFlow,
+                getArticlesForSection: articlesBackend.getArticlesForSection,
+                getSectionsForFlow: articlesBackend.getSectionsForFlow
+            };
+        }
+    ]);
+
     module.config([
         '$routeProvider',
         function ($routeProvider) {
@@ -38,89 +110,6 @@
                     controller: 'SectionsArticlesDetailCtrl',
                     templateUrl: 'templates/sections/articles-detail.html'
                 });
-        }
-    ]);
-
-    // Override this with a decorator to provide your own data.
-    module.service('articlesBackend', [
-        function () {
-            var defaults = {
-                articles: {
-                    temp: {}
-                },
-                sections: {
-                    temp: {
-                        articles: ['temp']
-                    }
-                },
-                flows: {
-                    temp: {
-                        sections: ['temp']
-                    }
-                }
-            };
-            var getListWithSlug = function (data) {
-                return _.map(data, getObjectWithSlug);
-            };
-            var getObjectWithSlug = function (data, slug) {
-                return angular.extend({
-                    slug: slug
-                }, data);
-            };
-            return {
-                getArticles: function () {
-                    return getListWithSlug(defaults.articles);
-                },
-                getArticle: function (slug) {
-                    return getObjectWithSlug(defaults.articles[slug], slug);
-                },
-                getSections: function () {
-                    return getListWithSlug(defaults.sections);
-                },
-                getSection: function (slug) {
-                    return getObjectWithSlug(defaults.sections[slug], slug);
-                },
-                getFlows: function () {
-                    return getListWithSlug(defaults.flows);
-                },
-                getFlow: function (slug) {
-                    return getObjectWithSlug(defaults.flows[slug], slug);
-                }
-            };
-        }
-    ]);
-
-    module.factory('articlesDataService', [
-        'articlesBackend',
-        function (articlesBackend) {
-            return {
-                getArticles: function () {
-                    return articlesBackend.getArticles();
-                },
-                getArticle: function (slug) {
-                    return articlesBackend.getArticle(slug);
-                },
-                getSections: function () {
-                    return articlesBackend.getSections();
-                },
-                getSection: function (slug) {
-                    return articlesBackend.getSection(slug);
-                },
-                getFlows: function () {
-                    return articlesBackend.getFlows();
-                },
-                getFlow: function (slug) {
-                    return articlesBackend.getFlow(slug);
-                },
-                getArticlesForSection: function (slug) {
-                    var section = articlesBackend.getSection(slug);
-                    return _.map(section.articles, articlesBackend.getArticle);
-                },
-                getSectionsForFlow: function (slug) {
-                    var flow = articlesBackend.getFlow(slug);
-                    return _.map(flow.sections, articlesBackend.getSection);
-                }
-            };
         }
     ]);
 
